@@ -17,12 +17,32 @@ events = [
     Event(2, "Python Workshop")
 ]
 
+@app.route("/")
+def home():
+    return jsonify({"message": "Welcome to the Event API"})
+
 # TODO: Task 1 - Define the Problem
 # Create a new event from JSON input
+
+
+@app.route("/events", methods=["GET"])
+def get_events():
+    event_data = [event.to_dict() for event in events]
+    return jsonify(event_data)
+
 @app.route("/events", methods=["POST"])
 def create_event():
+    data = request.get_json()
+    title = data["title"]
+    new_id = events[- 1].id + 1
+    new_event = Event(new_id, title)
+    events.append(new_event)
+    return jsonify(new_event.to_dict()), 201
+    
+    
+    
     # TODO: Task 2 - Design and Develop the Code
-
+    
     # TODO: Task 3 - Implement the Loop and Process Each Element
 
     # TODO: Task 4 - Return and Handle Results
@@ -32,7 +52,16 @@ def create_event():
 # Update the title of an existing event
 @app.route("/events/<int:event_id>", methods=["PATCH"])
 def update_event(event_id):
-    # TODO: Task 2 - Design and Develop the Code
+    data = request.get_json()
+    title = data["title"]
+    for event in events:
+        if event.id == event_id:
+            event.title = title
+            return jsonify(event.to_dict())
+    return jsonify({"error": "Event not found"}), 404
+
+
+     # TODO: Task 2 - Design and Develop the Code
 
     # TODO: Task 3 - Implement the Loop and Process Each Element
 
@@ -41,8 +70,23 @@ def update_event(event_id):
 
 # TODO: Task 1 - Define the Problem
 # Remove an event from the list
+
+
 @app.route("/events/<int:event_id>", methods=["DELETE"])
 def delete_event(event_id):
+    for event in events:
+        if event.id == event_id:
+            events.remove(event)
+            return "", 204
+    return jsonify({"error": "Event not found"}), 404
+    
+
+
+
+
+
+
+
     # TODO: Task 2 - Design and Develop the Code
 
     # TODO: Task 3 - Implement the Loop and Process Each Element
